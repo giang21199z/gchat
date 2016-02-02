@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Gchat</string>
+    <string name="title_activity_chat_online">Danh sách bạn online</string>
+    <string name="title_activity_chatting">Trò chuyện</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="one">Tab one</string>
+    <string name="app_id">222475818092774</string>
+</resources>
