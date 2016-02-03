@@ -1,4 +1,4 @@
-package com.giangnd_svmc.ghalo;
+package com.giangnd_svmc.ghalo.entity;
 
 /**
  * Created by GIANGND-SVMC on 22/01/2016.

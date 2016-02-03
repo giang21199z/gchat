@@ -71,20 +71,25 @@ public class FriendListChat extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
 //                 TODO Handle item click
-                Intent intent = new Intent(getBaseContext(), ChatOnline.class);
-                intent.putExtra("ME", me);
-                intent.putExtra("FRIEND", friends.get(position).getName());
-                startActivity(intent);
-                SocketHandler.setSocket(mSocket);
+                Toast.makeText(getApplicationContext(), "Friend:"+friends.get(position).getName(), Toast.LENGTH_SHORT).show();
+                if (friends.get(position).getName().equals(me.getName())) {
+                    Toast.makeText(getBaseContext(), "Can not talk to yourself!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(getBaseContext(), ChatOnline.class);
+                    intent.putExtra("ME", me);
+                    intent.putExtra("FRIEND", friends.get(position).getName());
+                    startActivity(intent);
+                    SocketHandler.setSocket(mSocket);
+                }
             }
         }));
         swIsOnline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mSocket.emit("client-join-room", me.getName()+"-"+me.getGender());
+                    mSocket.emit("client-join-room", me.getName() + "-" + me.getGender());
                 } else {
-                    mSocket.emit("client-out-room", me.getName()+"-"+me.getGender());
+                    mSocket.emit("client-out-room", me.getName() + "-" + me.getGender());
                 }
             }
         });

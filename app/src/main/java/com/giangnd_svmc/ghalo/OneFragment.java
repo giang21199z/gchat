@@ -15,8 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
+import com.giangnd_svmc.ghalo.dao.MessageDao;
 import com.giangnd_svmc.ghalo.entity.Account;
+import com.giangnd_svmc.ghalo.entity.Message;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -34,6 +37,7 @@ import java.util.List;
  */
 public class OneFragment extends Fragment {
     private Account session_user;
+    private MessageDao messageDao = new MessageDao(getActivity());
 
     public OneFragment() {
         // Required empty public constructor
@@ -99,10 +103,14 @@ public class OneFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
 //                 TODO Handle item click
-                Intent intent = new Intent(getActivity(), ChatOnline.class);
-                intent.putExtra("ME", session_user);
-                intent.putExtra("FRIEND", friends.get(position));
-                startActivity(intent);
+                if (friends.get(position).getName().equals(session_user.getName())) {
+                    Toast.makeText(getActivity(), "Can not talk to yourself!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(getActivity(), ChatOnline.class);
+                    intent.putExtra("ME", session_user);
+                    intent.putExtra("FRIEND", friends.get(position));
+                    startActivity(intent);
+                }
             }
         }));
     }
@@ -148,8 +156,11 @@ public class OneFragment extends Fragment {
                         String content = data.getString("tinnhan");
                         String arrs[] = content.split(":");
                         String person[] = arrs[0].split("-");
-                        friend = new Account("",person[0],person[1],"");
-                        createNoti("Bạn có tin nhắn mới", person[0]+":"+arrs[1]);
+                        createNoti("You have got new message!", person[0] + ":" + arrs[1]);
+                        Message message = new Message(session_user.getName(), person[0], arrs[1]);
+                        messageDao.open();
+                        messageDao.createData(message);
+                        messageDao.close();
                     } catch (JSONException e) {
                         return;
                     }
@@ -166,8 +177,8 @@ public class OneFragment extends Fragment {
                         .setContentText(content);
         Intent resultIntent = new Intent(getActivity(), ChatOnline.class);
         session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
-        resultIntent.putExtra("ME",session_user);
-        resultIntent.putExtra("FRIEND",friend);
+        resultIntent.putExtra("ME", session_user);
+        resultIntent.putExtra("FRIEND", friend);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(getActivity());
         stackBuilder.addParentStack(ChatOnline.class);
         stackBuilder.addNextIntent(resultIntent);

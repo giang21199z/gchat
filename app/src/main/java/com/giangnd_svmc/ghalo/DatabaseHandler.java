@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.sql.SQLException;
+import com.giangnd_svmc.ghalo.entity.Message;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by GIANGND-SVMC on 23/01/2016.

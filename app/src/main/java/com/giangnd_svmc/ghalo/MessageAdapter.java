@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.giangnd_svmc.ghalo.entity.Account;
+import com.giangnd_svmc.ghalo.entity.Message;
+
 import java.util.List;
 
 /**
@@ -16,6 +19,7 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
 
     private List<Message> messageList;
+    public Account session_user;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tvChatLeft, tvChatRight;
@@ -31,6 +35,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             rl1 = (RelativeLayout) view.findViewById(R.id.rl1);
             rl2 = (RelativeLayout) view.findViewById(R.id.rl2);
         }
+
+    }
+
+    public void setSession_user(Account session_user) {
+        this.session_user = session_user;
     }
 
     public MessageAdapter(List<Message> messageList) {
@@ -47,7 +56,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-        if (message.getMe().equals("me")) {
+        if (message.getMe().equals(session_user.getName())) {
             holder.imgChatLeft.setVisibility(View.INVISIBLE);
             holder.rl1.setVisibility(View.INVISIBLE);
             holder.tvChatLeft.setVisibility(View.INVISIBLE);

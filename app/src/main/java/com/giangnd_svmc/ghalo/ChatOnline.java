@@ -1,27 +1,24 @@
 package com.giangnd_svmc.ghalo;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.giangnd_svmc.ghalo.dao.MessageDao;
 import com.giangnd_svmc.ghalo.entity.Account;
+import com.giangnd_svmc.ghalo.entity.Message;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +33,8 @@ public class ChatOnline extends AppCompatActivity {
     private EditText edtChat;
     private Account friend;
     private Account me;
-    Socket mSocket = SocketHandler.getSocket();
+    private Socket mSocket = SocketHandler.getSocket();
+    private MessageDao messageDao = new MessageDao(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +46,12 @@ public class ChatOnline extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.rvfriend_chat_list);
         ibtnSend = (ImageButton) findViewById(R.id.btnChatFriend);
         edtChat = (EditText) findViewById(R.id.edtChat);
-
+        messageDao.open();
+        messages = messageDao.getHistoryMessage(friend, "5");
+        messageDao.close();
         recyclerView.setHasFixedSize(true);
         mAdapter = new MessageAdapter(messages);
+        mAdapter.setSession_user(me);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -68,8 +69,11 @@ public class ChatOnline extends AppCompatActivity {
                     edtChat.setText("");
                     mSocket.emit("client-chat-friend", me.getName() + "-" + me.getGender() + "_" + friend.getName() + "-" + friend.getGender() + ":" + content);
                     recyclerView.smoothScrollToPosition(recyclerView.getChildCount());
+                    messageDao.open();
+                    messageDao.createData(message);
+                    messageDao.close();
                 } catch (Exception e) {
-                    Toast.makeText(getBaseContext(),"Vui lòng đăng nhập để đọc tin nhắn",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Vui lòng đăng nhập để đọc tin nhắn", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -86,8 +90,12 @@ public class ChatOnline extends AppCompatActivity {
                     try {
                         String content = data.getString("tinnhan");
                         String arr[] = content.split(":");
-                        Message message = new Message("me", "friend", arr[1]);
+                        String[] nguoi_gui = arr[0].split("-");
+                        Message message = new Message(nguoi_gui[0], me.getName(), arr[1]);
                         messages.add(message);
+                        messageDao.open();
+                        messageDao.createData(message);
+                        messageDao.close();
                         mAdapter.notifyDataSetChanged();
                     } catch (JSONException e) {
                         return;
