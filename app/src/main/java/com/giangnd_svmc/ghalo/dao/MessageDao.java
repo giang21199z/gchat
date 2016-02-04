@@ -15,6 +15,7 @@ import com.giangnd_svmc.ghalo.entity.Account;
 import com.giangnd_svmc.ghalo.entity.Message;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MessageDao {
@@ -107,7 +108,7 @@ public class MessageDao {
             }
         }
         c.close();
-
+        Collections.reverse(list);
         return list;
     }
 

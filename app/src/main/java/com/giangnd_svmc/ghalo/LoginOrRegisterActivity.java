@@ -2,25 +2,30 @@ package com.giangnd_svmc.ghalo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.giangnd_svmc.ghalo.entity.Account;
 
 import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginOrRegisterActivity extends AppCompatActivity {
 
@@ -39,7 +44,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         String email = sp.getString("email", "none");
         if (!name.equals("none") && !gender.equals("none")) {
             session_user = new Account(id, name, gender, email);
-            Intent intent = new Intent(getBaseContext(), TabActivity.class);
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
             intent.putExtra("SESSION", session_user);
             startActivity(intent);
         } else {
@@ -52,6 +57,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(LoginResult loginResult) {
+                    Toast.makeText(getBaseContext(), "Success", Toast.LENGTH_SHORT).show();
                     GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
@@ -72,7 +78,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                                 edt.putString("email", email);
                                 edt.commit();
                             }
-                            Intent intent = new Intent(getBaseContext(), TabActivity.class);
+                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
                             intent.putExtra("SESSION", session_user);
                             startActivity(intent);
                         }
@@ -85,12 +91,12 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancel() {
-                    Toast.makeText(getBaseContext(), "Login attempt canceled.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Login Cancle", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onError(FacebookException e) {
-                    Toast.makeText(getBaseContext(), "Login attempt failed.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Login False", Toast.LENGTH_LONG).show();
                 }
             });
         }

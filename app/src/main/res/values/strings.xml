@@ -1,8 +1,21 @@
 <resources>
     <string name="app_name">Gchat</string>
-    <string name="title_activity_chat_online">Danh sách bạn online</string>
-    <string name="title_activity_chatting">Trò chuyện</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="one">Tab one</string>
-    <string name="app_id">222475818092774</string>
+    <string name="title_activity_chat_online">List friend online</string>
+    <string name="title_activity_chatting">Chatting</string>
+    <string name="app_id">1695042260711319</string>
+    <string name="ME">ME</string>
+    <string name="FRIEND">FRIEND</string>
+    <string name="limit">5</string>
+    <string name="client_chat_friend">client-chat-friend</string>
+    <string name="before_you_must_login">You must login, before!</string>
+    <string name="server_tra_ve_tn_">server-tra-ve-tn-</string>
+    <string name="tinnhan">tinnhan</string>
+    <string name="title_tab_one">Chat Online</string>
+    <string name="title_tab_two">Sms</string>
+    <string name="title_tab_three">Personalized</string>
+    <string name="female">female</string>
+    <string name="have_new_messages">Have new messages!!!</string>
+    <string name="database_name">gchat</string>
+    <string name="table_message">tblmessage</string>
+    <string name="title_activity_base">BaseActivity</string>
 </resources>

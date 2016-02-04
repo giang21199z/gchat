@@ -5,13 +5,24 @@ import java.io.Serializable;
 /**
  * Created by GIANGND-SVMC on 28/01/2016.
  */
-public class Account implements Serializable{
+public class Account implements Serializable {
     private String id;
     private String name;
     private String gender;
     private String email;
+    private boolean checkNewSms = false;
 
     public Account() {
+    }
+
+    public boolean getCheckNewSms() {
+        return checkNewSms;
+    }
+
+    ;
+
+    public void setCheckNewSms(boolean checkNewSms) {
+        this.checkNewSms = checkNewSms;
     }
 
     public String getName() {

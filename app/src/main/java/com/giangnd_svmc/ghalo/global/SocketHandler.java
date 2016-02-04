@@ -1,4 +1,4 @@
-package com.giangnd_svmc.ghalo;
+package com.giangnd_svmc.ghalo.global;
 
 /**
  * Created by GIANGND-SVMC on 19/01/2016.

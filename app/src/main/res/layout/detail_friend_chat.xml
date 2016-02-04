@@ -6,16 +6,27 @@
     android:clickable="true"
     android:focusable="true">
 
+    <TextView
+        android:id="@+id/tvFriendChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Giang"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
     <ImageView
         android:id="@+id/imvChatLeft"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/tvFriendChat"
         android:src="@drawable/chat_left" />
 
     <RelativeLayout
         android:id="@+id/rl1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/imvChatLeft"
         android:background="#9cef19"
         android:clickable="true"

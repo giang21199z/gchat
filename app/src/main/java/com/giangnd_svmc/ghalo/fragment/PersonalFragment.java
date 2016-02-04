@@ -1,4 +1,4 @@
-package com.giangnd_svmc.ghalo;
+package com.giangnd_svmc.ghalo.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,22 +11,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
-import com.facebook.login.widget.LoginButton;
+import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
+import com.giangnd_svmc.ghalo.R;
+import com.giangnd_svmc.ghalo.global.SocketHandler;
 import com.giangnd_svmc.ghalo.entity.Account;
 import com.github.nkzawa.socketio.client.Socket;
 
 /**
  * Created by GIANGND-SVMC on 27/01/2016.
  */
-public class ThreeFragment extends Fragment {
+public class PersonalFragment extends Fragment {
     private Account session_user;
     private Button btnLogout;
     private Socket mSocket;
 
-    public ThreeFragment() {
+    public PersonalFragment() {
         // Required empty public constructor
     }
 

@@ -4,4 +4,4 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background"
-    tools:context="com.giangnd_svmc.ghalo.StartActivity"></RelativeLayout>
+    tools:context=".StartActivity"></RelativeLayout>

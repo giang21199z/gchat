@@ -1,4 +1,4 @@
-package com.giangnd_svmc.ghalo;
+package com.giangnd_svmc.ghalo.event;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

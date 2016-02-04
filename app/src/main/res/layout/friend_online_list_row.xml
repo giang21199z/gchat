@@ -20,22 +20,33 @@
         android:src="@drawable/avatar" />
 
     <TextView
-        android:layout_marginLeft="10dp"
         android:id="@+id/tvListName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="30dp"
         android:layout_toRightOf="@id/avatar"
         android:text="Giang Nguyễn"
-        android:textSize="30dp" />
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvListCheckSms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="Have new messages!!!"
+        android:textSize="15dp"
+        android:textStyle="italic"
+        android:layout_below="@+id/tvListName"
+        android:layout_alignStart="@+id/tvListName" />
 
     <ImageView
         android:id="@+id/isonline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="45dp"
         android:src="@drawable/online" />
 
 </RelativeLayout>

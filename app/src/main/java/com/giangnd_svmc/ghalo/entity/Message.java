@@ -1,12 +1,15 @@
 package com.giangnd_svmc.ghalo.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by GIANGND-SVMC on 22/01/2016.
  */
-public class Message {
+public class Message implements Serializable {
     private String me;
     private String friend;
     private String content;
+    private boolean isMe = true;
 
     public Message() {
     }
@@ -15,6 +18,14 @@ public class Message {
         this.me = me;
         this.friend = friend;
         this.content = content;
+    }
+
+    public void setIsMe(boolean isMe) {
+        this.isMe = isMe;
+    }
+
+    public boolean getIsMe() {
+        return this.isMe;
     }
 
     public String getMe() {

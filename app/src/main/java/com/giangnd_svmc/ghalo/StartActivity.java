@@ -1,16 +1,12 @@
 package com.giangnd_svmc.ghalo;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 
-import java.security.MessageDigest;
+import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
+import com.giangnd_svmc.ghalo.R;
 
 
 public class StartActivity extends AppCompatActivity {
