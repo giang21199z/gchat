@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dip">
+
+    <TextView
+        android:id="@+id/ccontName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="1dip"
+        android:text="Hoang"
+        android:textColor="#040404"
+        android:textSize="18dip"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/ccontNo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ccontName"
+        android:layout_marginLeft="10dip"
+        android:layout_marginTop="7dip"
+        android:text="0974325262"
+        android:textColor="#343434"
+        android:textSize="13dip" />
+
+    <TextView
+        android:id="@+id/ccontType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/ccontName"
+        android:layout_marginRight="5dip"
+        android:gravity="right"
+        android:text="Mobile"
+        android:textColor="#10bcc9"
+        android:textSize="12dip"
+        android:textStyle="bold" />
+
+</RelativeLayout>

@@ -62,7 +62,7 @@ public class ChatOnlineFragment extends Fragment {
         session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
         try {
             //connect to server
-            mSocket = IO.socket("http://192.168.201.1:3000");
+            mSocket = IO.socket("http://192.168.43.22:3000");
 //            mSocket = IO.socket("http://103.237.99.174:3000");
         } catch (URISyntaxException e) {
             e.printStackTrace();

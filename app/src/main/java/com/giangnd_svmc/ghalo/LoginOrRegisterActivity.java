@@ -21,11 +21,13 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.giangnd_svmc.ghalo.entity.Account;
+import com.giangnd_svmc.ghalo.entity.SMS;
 
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 public class LoginOrRegisterActivity extends AppCompatActivity {
 
@@ -44,8 +46,10 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         String email = sp.getString("email", "none");
         if (!name.equals("none") && !gender.equals("none")) {
             session_user = new Account(id, name, gender, email);
-            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
+            Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("SESSION", session_user);
+            intent.putExtra("LIST_SMS", listSMS);
             startActivity(intent);
         } else {
             FacebookSdk.sdkInitialize(getApplicationContext());
@@ -78,9 +82,13 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                                 edt.putString("email", email);
                                 edt.commit();
                             }
-                            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                            session_user = new Account(id, name, gender, email);
+                            ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
+                            Intent intent = new Intent(getApplication(), MainActivity.class);
                             intent.putExtra("SESSION", session_user);
+                            intent.putExtra("LIST_SMS", listSMS);
                             startActivity(intent);
+
                         }
                     });
                     Bundle parameters = new Bundle();

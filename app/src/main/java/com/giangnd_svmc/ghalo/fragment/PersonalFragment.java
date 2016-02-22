@@ -3,6 +3,7 @@ package com.giangnd_svmc.ghalo.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -24,7 +26,8 @@ import com.github.nkzawa.socketio.client.Socket;
  */
 public class PersonalFragment extends Fragment {
     private Account session_user;
-    private Button btnLogout;
+    private Button btnLogout,btnGuide,btnAboutUs;
+    private ImageView imvFragmentThree;
     private Socket mSocket;
 
     public PersonalFragment() {
@@ -47,6 +50,9 @@ public class PersonalFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnLogout = (Button) view.findViewById(R.id.btnLogout);
+        btnGuide = (Button) view.findViewById(R.id.btnGuide);
+        btnAboutUs = (Button) view.findViewById(R.id.btnAboutUs);
+        imvFragmentThree = (ImageView) view.findViewById(R.id.imvFragmentThree);
         session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +87,20 @@ public class PersonalFragment extends Fragment {
                         })
                         .setNegativeButton("No", null)
                         .show();
+            }
+        });
+        btnGuide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imvFragmentThree.setImageDrawable(getResources().getDrawable(R.drawable.guideline));
+                imvFragmentThree.requestFocus();
+            }
+        });
+        btnAboutUs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imvFragmentThree.setImageDrawable(getResources().getDrawable(R.drawable.about_us));
+                imvFragmentThree.requestFocus();
             }
         });
     }

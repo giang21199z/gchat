@@ -15,12 +15,7 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(getBaseContext(), LoginOrRegisterActivity.class);
-                startActivity(i);
-            }
-        }, 3000);
+        ReadSMS readSMS = new ReadSMS(StartActivity.this);
+        readSMS.execute();
     }
 }
