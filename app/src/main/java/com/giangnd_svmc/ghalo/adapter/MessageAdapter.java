@@ -59,15 +59,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Message message = messageList.get(position);
         if (message.getMe().equals(session_user.getName())) {
-            holder.imgChatLeft.setVisibility(View.INVISIBLE);
-            holder.rl1.setVisibility(View.INVISIBLE);
-            holder.tvChatLeft.setVisibility(View.INVISIBLE);
-            holder.tvFriendChat.setVisibility(View.INVISIBLE);
-            holder.tvChatRight.setText(message.getContent());
-            holder.imgChatRight.setVisibility(View.VISIBLE);
-            holder.rl2.setVisibility(View.VISIBLE);
-            holder.tvChatRight.setVisibility(View.VISIBLE);
-        } else {
             holder.imgChatLeft.setVisibility(View.VISIBLE);
             holder.rl1.setVisibility(View.VISIBLE);
             holder.tvChatLeft.setVisibility(View.VISIBLE);
@@ -77,6 +68,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             holder.tvChatRight.setVisibility(View.INVISIBLE);
             holder.tvChatLeft.setText(message.getContent());
             holder.tvFriendChat.setText(session_user.getName());
+        } else {
+            holder.imgChatLeft.setVisibility(View.INVISIBLE);
+            holder.rl1.setVisibility(View.INVISIBLE);
+            holder.tvChatLeft.setVisibility(View.INVISIBLE);
+            holder.tvFriendChat.setVisibility(View.INVISIBLE);
+            holder.tvChatRight.setText(message.getContent());
+            holder.imgChatRight.setVisibility(View.VISIBLE);
+            holder.rl2.setVisibility(View.VISIBLE);
+            holder.tvChatRight.setVisibility(View.VISIBLE);
         }
     }
 
