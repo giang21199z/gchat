@@ -23,7 +23,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
     public Account session_user;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvChatLeft, tvChatRight, tvFriendChat;
+        public TextView tvChatLeft, tvChatRight, tvFriendChat, tvFriendChat2;
         public ImageView imgChatLeft, imgChatRight;
         public RelativeLayout rl1, rl2;
 
@@ -32,6 +32,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             tvChatLeft = (TextView) view.findViewById(R.id.tv_chat_left);
             tvChatRight = (TextView) view.findViewById(R.id.tv_chat_right);
             tvFriendChat = (TextView) view.findViewById(R.id.tvFriendChat);
+            tvFriendChat2 = (TextView) view.findViewById(R.id.tvFriendChat2);
             imgChatLeft = (ImageView) view.findViewById(R.id.imvChatLeft);
             imgChatRight = (ImageView) view.findViewById(R.id.imvChatRight);
             rl1 = (RelativeLayout) view.findViewById(R.id.rl1);
@@ -63,6 +64,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             holder.rl1.setVisibility(View.VISIBLE);
             holder.tvChatLeft.setVisibility(View.VISIBLE);
             holder.tvFriendChat.setVisibility(View.VISIBLE);
+            holder.tvFriendChat2.setVisibility(View.INVISIBLE);
             holder.imgChatRight.setVisibility(View.INVISIBLE);
             holder.rl2.setVisibility(View.INVISIBLE);
             holder.tvChatRight.setVisibility(View.INVISIBLE);
@@ -73,10 +75,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
             holder.rl1.setVisibility(View.INVISIBLE);
             holder.tvChatLeft.setVisibility(View.INVISIBLE);
             holder.tvFriendChat.setVisibility(View.INVISIBLE);
+            holder.tvFriendChat2.setVisibility(View.VISIBLE);
             holder.tvChatRight.setText(message.getContent());
             holder.imgChatRight.setVisibility(View.VISIBLE);
             holder.rl2.setVisibility(View.VISIBLE);
             holder.tvChatRight.setVisibility(View.VISIBLE);
+            holder.tvFriendChat2.setText(message.getMe());
         }
     }
 

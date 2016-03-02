@@ -42,20 +42,30 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tvFriendChat2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Người ấy"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
     <ImageView
         android:id="@+id/imvChatRight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/chat_right" />
+        android:src="@drawable/chat_right"
+        android:layout_below="@+id/tvFriendChat2"
+        android:layout_toStartOf="@+id/tvFriendChat2" />
 
     <RelativeLayout
         android:id="@+id/rl2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/imvChatRight"
-        android:background="#d8f2ff">
+        android:background="#d8f2ff"
+        android:layout_alignBottom="@+id/imvChatRight"
+        android:layout_toStartOf="@+id/imvChatRight">
 
         <TextView
             android:id="@+id/tv_chat_right"
