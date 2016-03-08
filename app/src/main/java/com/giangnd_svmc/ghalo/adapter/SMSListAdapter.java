@@ -5,11 +5,13 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.entity.SMS;
@@ -56,7 +58,7 @@ public class SMSListAdapter extends ArrayAdapter {
             img.setTextColor(Color.parseColor(colors[random.nextInt(colors.length)]));
         } else {
             title.setText(sms.get_address());
-            img.setText(sms.get_address().substring(0, 1));
+            img.setText("G");
         }
         String temp = show40char(sms.getBody());
         artist.setText(temp);
@@ -134,23 +136,27 @@ public class SMSListAdapter extends ArrayAdapter {
 
     public String show40char(String sms) {
         String temp = "";
-
-        String[] separated = sms.split(" ");
-        if (separated.length > 1) {
-            for (int i = 0; i < separated.length; i++) {
-                if (temp.length() < 40) {
-                    temp = temp + separated[i] + " ";
+        try {
+            String[] separated = sms.split(" ");
+            if (separated.length > 1) {
+                for (int i = 0; i < separated.length; i++) {
+                    if (temp.length() < 40) {
+                        temp = temp + separated[i] + " ";
+                    }
                 }
-            }
-        } else {
-            if (sms.length() > 40) {
-                temp = sms.substring(0, 40);
-                temp += "...";
             } else {
-                temp = sms.substring(0, sms.length());
+                if (sms.length() > 40) {
+                    temp = sms.substring(0, 40);
+                    temp += "...";
+                } else {
+                    temp = sms.substring(0, sms.length());
+                }
+
             }
+        } catch (Exception ex) {
 
         }
+
         return temp;
     }
 }
