@@ -18,7 +18,8 @@
             android:text="Turn on/off chat"
             android:textColor="#0033ff"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:checked="true" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

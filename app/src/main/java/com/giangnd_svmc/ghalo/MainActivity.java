@@ -11,12 +11,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.entity.Account;
 import com.giangnd_svmc.ghalo.fragment.ChatOnlineFragment;
 import com.giangnd_svmc.ghalo.fragment.PersonalFragment;
 import com.giangnd_svmc.ghalo.fragment.SmsFragment;
+import com.giangnd_svmc.ghalo.global.SocketHandler;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,5 +87,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        try {
+            Socket mSocket = IO.socket(getResources().getString(R.string.hosting));
+            mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getBaseContext(), "Destroy app", Toast.LENGTH_SHORT).show();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

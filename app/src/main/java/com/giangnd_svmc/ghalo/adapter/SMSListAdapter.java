@@ -31,7 +31,6 @@ import java.util.Random;
  */
 public class SMSListAdapter extends ArrayAdapter {
     Activity activity;
-    String[] colors = {"#FFFF0900", "#FFFF5E00", "#FFFFE600", "#FF8CFF00", "#FF00FFBF", "#FF00FFA6", "#FF0059FF", "#FFE600FF", "#FFFF0099"};
 
     public SMSListAdapter(Activity activity, ArrayList products) {
         super(activity, 0, products);
@@ -47,7 +46,6 @@ public class SMSListAdapter extends ArrayAdapter {
         TextView duration = (TextView) convertView.findViewById(R.id.duration);
 
         SMS sms = (SMS) getItem(position);
-        Random random = new Random();
         if (sms.getPerson() != null) {
             title.setText(sms.getPerson());
             if (sms.getPerson().substring(0, 1).equals("+")) {
@@ -55,7 +53,6 @@ public class SMSListAdapter extends ArrayAdapter {
             } else {
                 img.setText(sms.getPerson().substring(0, 1));
             }
-            img.setTextColor(Color.parseColor(colors[random.nextInt(colors.length)]));
         } else {
             title.setText(sms.get_address());
             img.setText("G");

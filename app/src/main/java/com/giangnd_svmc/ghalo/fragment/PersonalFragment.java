@@ -17,16 +17,19 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
 import com.giangnd_svmc.ghalo.R;
+import com.giangnd_svmc.ghalo.entity.SMS;
 import com.giangnd_svmc.ghalo.global.SocketHandler;
 import com.giangnd_svmc.ghalo.entity.Account;
 import com.github.nkzawa.socketio.client.Socket;
+
+import java.util.ArrayList;
 
 /**
  * Created by GIANGND-SVMC on 27/01/2016.
  */
 public class PersonalFragment extends Fragment {
     private Account session_user;
-    private Button btnLogout,btnGuide,btnAboutUs;
+    private Button btnLogout, btnGuide, btnAboutUs;
     private ImageView imvFragmentThree;
     private Socket mSocket;
 
@@ -82,7 +85,12 @@ public class PersonalFragment extends Fragment {
                                 mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
                                 //End logout room chat
                                 Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
+                                ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra("LIST_SMS", listThreadIdSMS);
                                 startActivity(intent);
+                                mSocket.disconnect();
+                                getActivity().finish();
                             }
                         })
                         .setNegativeButton("No", null)

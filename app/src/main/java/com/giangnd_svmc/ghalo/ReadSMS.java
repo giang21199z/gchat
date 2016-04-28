@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
+import android.util.Log;
 import android.view.Gravity;
 
 import com.giangnd_svmc.ghalo.adapter.SMSDetailAdapter;
@@ -83,7 +85,8 @@ public class ReadSMS extends AsyncTask<Void, Void, Void> {
         if (type == 0) {
             Intent intent = new Intent(activity, LoginOrRegisterActivity.class);
             intent.putExtra("LIST_SMS", listSMS);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
         } else if (type == 1) {
             Intent intent = new Intent(smsFragment, SMSDetailActivity.class);
@@ -98,26 +101,29 @@ public class ReadSMS extends AsyncTask<Void, Void, Void> {
         ArrayList<SMS> listSMS = new ArrayList<>();
 
 //        Cursor cur = getContentResolver().query(Conversations.CONTENT_URI, null, null, null, null);
-        Cursor cur = context.getContentResolver().query(Telephony.Threads.CONTENT_URI, null, null, null, Telephony.Sms.DEFAULT_SORT_ORDER);
-        int count = 1;
-        SMS sms = new SMS();
-        for (int i = 0; i < cur.getCount(); i++) {
-            cur.moveToNext();
-            sms.setType(cur.getString(15));
-            sms.set_address(cur.getString(18));
-            sms.setPerson(getContactName(context.getApplicationContext(), sms.get_address()));
-            sms.setRead(cur.getString(23));
-//            sms.setDate(cur.getString(25));
-            sms.setBody(cur.getString(26));
-            sms.set_thread_id(cur.getString(31));
-            long timeDate = Long.valueOf(cur.getString(25));
-            String date = new SimpleDateFormat("HH:mm yyyy/MM/dd").format(new Date(timeDate));
-            sms.setDate(date);
+        try {
+            Cursor cur = context.getContentResolver().query(Telephony.Threads.CONTENT_URI, null, null, null, Telephony.Sms.DEFAULT_SORT_ORDER);
+            int count = 1;
+            SMS sms = new SMS();
+            for (int i = 0; i < cur.getCount(); i++) {
+                cur.moveToNext();
+                sms.setType(cur.getString(cur.getColumnIndex("type")));
+                sms.set_address(cur.getString(cur.getColumnIndex("address")));
+                sms.setPerson(getContactName(context.getApplicationContext(), sms.get_address()));
+                sms.setRead(cur.getString(cur.getColumnIndex("read")));
+                sms.setBody(cur.getString(cur.getColumnIndex("body")));
+                sms.set_thread_id(cur.getString(cur.getColumnIndex("thread_id")));
+                long timeDate = Long.valueOf(cur.getString(cur.getColumnIndex("date")));
+                String date = new SimpleDateFormat("HH:mm yyyy/MM/dd").format(new Date(timeDate));
+                sms.setDate(date);
+                listSMS.add(sms);
+                sms = new SMS();
+            }
+            cur.close();
 
-            listSMS.add(sms);
-            sms = new SMS();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        cur.close();
 
         return listSMS;
     }
@@ -169,5 +175,11 @@ public class ReadSMS extends AsyncTask<Void, Void, Void> {
         return contactName;
     }
 
+    public String getAndroidVersion() {
+        String release = Build.VERSION.RELEASE;
+        int sdkVersion = Build.VERSION.SDK_INT;
+//        return "Android SDK: " + sdkVersion + " (" + release + ")";
+        return sdkVersion + "";
+    }
 
 }

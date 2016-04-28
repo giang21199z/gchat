@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.entity.Account;
 import com.giangnd_svmc.ghalo.entity.Message;
@@ -91,24 +93,29 @@ public class MessageDao {
     public List<Message> getHistoryMessage(Account friend, String limit) {
         List<Message> list = new ArrayList<>();
         String[] columns = new String[]{COLUMN_ID, COLUMN_ME, COLUMN_FRIEND, COLUMN_CONTENT};
-        Cursor c = db.query(TABLE_MESSAGE, columns, COLUMN_ME + "=? OR " + COLUMN_FRIEND + "=?", new String[]{friend.getName(), friend.getName()}, null, null, "_id DESC", limit);
-        if (c != null) {
-            //getColumnIndex(COLUMN_ID); là lấy chỉ số, vị trí của cột COLUMN_ID ...
-            int iM = c.getColumnIndex(COLUMN_ME);
-            int iF = c.getColumnIndex(COLUMN_FRIEND);
-            int iC = c.getColumnIndex(COLUMN_CONTENT);
+        try {
+            Cursor c = db.query(TABLE_MESSAGE, columns, COLUMN_ME + "=? OR " + COLUMN_FRIEND + "=?", new String[]{friend.getName(), friend.getName()}, null, null, "_id DESC", limit);
+            Log.d("DEV", c.toString());
+            if (c != null) {
+                //getColumnIndex(COLUMN_ID); là lấy chỉ số, vị trí của cột COLUMN_ID ...
+                int iM = c.getColumnIndex(COLUMN_ME);
+                int iF = c.getColumnIndex(COLUMN_FRIEND);
+                int iC = c.getColumnIndex(COLUMN_CONTENT);
 
-            //Vòng lặp lấy dữ liệu của con trỏ
-            for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-                String sMe = c.getString(iM);
-                String sFriend = c.getString(iF);
-                String content = c.getString(iC);
-                Message message = new Message(sMe, sFriend, content);
-                list.add(message);
+                //Vòng lặp lấy dữ liệu của con trỏ
+                for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+                    String sMe = c.getString(iM);
+                    String sFriend = c.getString(iF);
+                    String content = c.getString(iC);
+                    Message message = new Message(sMe, sFriend, content);
+                    list.add(message);
+                }
             }
+            c.close();
+            Collections.reverse(list);
+        } catch (Exception e) {
+
         }
-        c.close();
-        Collections.reverse(list);
         return list;
     }
 

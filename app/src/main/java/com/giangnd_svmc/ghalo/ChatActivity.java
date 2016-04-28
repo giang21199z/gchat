@@ -15,6 +15,7 @@ import com.giangnd_svmc.ghalo.adapter.MessageAdapter;
 import com.giangnd_svmc.ghalo.dao.MessageDao;
 import com.giangnd_svmc.ghalo.entity.Account;
 import com.giangnd_svmc.ghalo.entity.Message;
+import com.giangnd_svmc.ghalo.global.SessionHandler;
 import com.giangnd_svmc.ghalo.global.SocketHandler;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
@@ -46,7 +47,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.friend_chat_list);
 
         Intent intent = getIntent();
-        me = (Account) intent.getSerializableExtra(getString(R.string.ME));
+        me = new SessionHandler(this.getBaseContext()).getSharePrefer();
         friend = (Account) intent.getSerializableExtra(getString(R.string.FRIEND));
 
         recyclerView = (RecyclerView) findViewById(R.id.rvfriend_chat_list);
@@ -72,29 +73,34 @@ public class ChatActivity extends AppCompatActivity {
                     if (content.length() == 0) return;
                     Message message = new Message(me.getName(), friend.getName(), content);
                     messages.add(message);
-                    mAdapter = new MessageAdapter(messages);
+                    if (messages.size() > 10) {
+                        messages.remove(0);
+                    }
                     mAdapter.setSession_user(me);
-                    recyclerView.setAdapter(mAdapter);
                     edtChat.setText("");
                     mSocket.emit(getString(R.string.client_chat_friend), me.getName() + "-" + me.getGender() + "_" + friend.getName() + "-" + friend.getGender() + ":" + content);
-                    recyclerView.smoothScrollToPosition(0);
                     messageDao.open();
                     messageDao.createData(message);
                     messageDao.close();
+
+                    mAdapter.notifyDataSetChanged();
+                    recyclerView.setAdapter(mAdapter);
+                    recyclerView.smoothScrollToPosition(messages.size());
+
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), getString(R.string.before_you_must_login), Toast.LENGTH_LONG).show();
                 }
             }
         });
         mSocket.on(getString(R.string.server_tra_ve_tn_) + me.getName() + "-" + me.getGender(), nhanTinNhan);
+        //event show them message
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 messageDao.open();
                 messages = messageDao.getHistoryMessage(friend, "20");
-                Toast.makeText(getBaseContext(), "F5", Toast.LENGTH_LONG).show();
                 messageDao.close();
-                mAdapter = new MessageAdapter(messages);
+
                 mAdapter.setSession_user(me);
                 recyclerView.setAdapter(mAdapter);
                 recyclerView.smoothScrollToPosition(messages.size());
@@ -116,9 +122,10 @@ public class ChatActivity extends AppCompatActivity {
                         String[] nguoi_gui = arr[0].split("-");
                         Message message = new Message(nguoi_gui[0], me.getName(), arr[1]);
                         messages.add(message);
-                        messageDao.open();
-                        messageDao.createData(message);
-                        messageDao.close();
+                        if (messages.size() > 10) {
+                            messages.remove(0);
+                        }
+                        //set data vao recycler
                         mAdapter.notifyDataSetChanged();
                         recyclerView.setAdapter(mAdapter);
                         recyclerView.smoothScrollToPosition(messages.size());
@@ -129,5 +136,4 @@ public class ChatActivity extends AppCompatActivity {
             });
         }
     };
-
 }

@@ -48,9 +48,11 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
             session_user = new Account(id, name, gender, email);
             ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
             Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("SESSION", session_user);
             intent.putExtra("LIST_SMS", listSMS);
             startActivity(intent);
+            finish();
         } else {
             FacebookSdk.sdkInitialize(getApplicationContext());
             callbackManager = CallbackManager.Factory.create();
@@ -84,11 +86,12 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                             }
                             session_user = new Account(id, name, gender, email);
                             ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
-                            Intent intent = new Intent(getApplication(), MainActivity.class);
+                            Intent intent = new Intent(LoginOrRegisterActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("SESSION", session_user);
                             intent.putExtra("LIST_SMS", listSMS);
                             startActivity(intent);
-
+                            finish();
                         }
                     });
                     Bundle parameters = new Bundle();
@@ -113,5 +116,10 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

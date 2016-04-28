@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,17 +61,23 @@ public class ChatOnlineFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
+        //connect to server
+//            mSocket = IO.socket("http://192.168.43.22:3000");
         try {
-            //connect to server
-            mSocket = IO.socket("http://192.168.43.22:3000");
-//            mSocket = IO.socket("http://103.237.99.174:3000");
+//            mSocket = IO.socket("http://192.168.11.1:3000");
+            mSocket = IO.socket(getResources().getString(R.string.hosting));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+//            mSocket = IO.socket("http://103.237.99.174:3000");
         mSocket.connect();
         //server tra ve ket qua
-        mSocket.on("server-tra-ve-so-nguoi-online", clientReqNumberUserOnline);
-        mSocket.on("server-tra-ve-tn-" + session_user.getName() + "-" + session_user.getGender(), baoNoti);
+        try {
+            mSocket.on("server-tra-ve-so-nguoi-online", clientReqNumberUserOnline);
+            mSocket.on("server-tra-ve-tn-" + session_user.getName() + "-" + session_user.getGender(), baoNoti);
+        } catch (Exception ex) {
+            Log.d("MYEXCEPTION", ex.getMessage());
+        }
         SocketHandler.setSocket(mSocket);
     }
 
@@ -180,7 +187,7 @@ public class ChatOnlineFragment extends Fragment {
                         recyclerView.setAdapter(mAdapter);
                         Toast.makeText(getActivity(), "You have got new message!\n" + person[0] + ":" + arrs[1], Toast.LENGTH_LONG).show();
 //                        createNoti("You have got new message!", person[0] + ":" + arrs[1]);
-                        Message message = new Message(session_user.getName(), person[0], arrs[1]);
+                        Message message = new Message(person[0], session_user.getName(), arrs[1]);
                         messageDao = new MessageDao(getActivity());
                         messageDao.open();
                         messageDao.createData(message);
@@ -193,40 +200,49 @@ public class ChatOnlineFragment extends Fragment {
         }
     };
 
-    public void createNoti(String title, String content) {
-        NotificationCompat.Builder mBuilder =
-                (NotificationCompat.Builder) new NotificationCompat.Builder(getActivity())
-                        .setSmallIcon(R.drawable.message_icon)
-                        .setContentTitle(title)
-                        .setContentText(content);
-        Intent resultIntent = new Intent(getActivity(), ChatActivity.class);
-        session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
-        resultIntent.putExtra("ME", session_user);
-        resultIntent.putExtra("FRIEND", friend);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getActivity());
-        stackBuilder.addParentStack(ChatActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1, mBuilder.build());
-    }
+
+//    public void createNoti(String title, String content) {
+//        NotificationCompat.Builder mBuilder =
+//                (NotificationCompat.Builder) new NotificationCompat.Builder(getActivity())
+//                        .setSmallIcon(R.drawable.message_icon)
+//                        .setContentTitle(title)
+//                        .setContentText(content);
+//        Intent resultIntent = new Intent(getActivity(), ChatActivity.class);
+//        session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
+//        resultIntent.putExtra("ME", session_user);
+//        resultIntent.putExtra("FRIEND", friend);
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getActivity());
+//        stackBuilder.addParentStack(ChatActivity.class);
+//        stackBuilder.addNextIntent(resultIntent);
+//        PendingIntent resultPendingIntent =
+//                stackBuilder.getPendingIntent(
+//                        0,
+//                        PendingIntent.FLAG_UPDATE_CURRENT
+//                );
+//        mBuilder.setContentIntent(resultPendingIntent);
+//        NotificationManager mNotificationManager =
+//                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+//        mNotificationManager.notify(1, mBuilder.build());
+//    }
 
     @Override
     public void onResume() {
         super.onResume();
         mAdapter = new AccountAdapter(friends);
         recyclerView.setAdapter(mAdapter);
+        mSocket.emit("client-join-room", session_user.getName() + "-" + session_user.getGender());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Toast.makeText(getActivity(), "Onpause", Toast.LENGTH_SHORT).show();
+        mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        //out room
         mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
     }
 }
