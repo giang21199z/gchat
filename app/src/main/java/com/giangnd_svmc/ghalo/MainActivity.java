@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.entity.Account;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         try {
             Socket mSocket = IO.socket(getResources().getString(R.string.hosting));
-            mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+            mSocket.emit("client-out-room", session_user.toServer());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

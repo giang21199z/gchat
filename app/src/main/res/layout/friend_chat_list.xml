@@ -39,18 +39,21 @@
 
         <EditText
             android:id="@+id/edtChat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="1dp"
-            android:layout_weight="2"
-            android:hint="Viết tin nhắn" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="16"
+            android:background="@color/bg_msg_input"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:textColor="@color/text_msg_input" />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnChatFriend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="18"
-            android:background="@drawable/sent" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:background="@color/bg_btn_join"
+            android:text="Sent"
+            android:textColor="@color/white" />
     </LinearLayout>
 </RelativeLayout>

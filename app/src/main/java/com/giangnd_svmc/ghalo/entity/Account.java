@@ -63,4 +63,8 @@ public class Account implements Serializable {
         this.gender = gender;
         this.email = email;
     }
+
+    public String toServer() {
+        return this.id + "-" + this.name + "-" + this.gender;
+    }
 }

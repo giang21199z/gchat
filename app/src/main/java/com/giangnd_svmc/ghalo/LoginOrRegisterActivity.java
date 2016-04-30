@@ -18,6 +18,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.giangnd_svmc.ghalo.entity.Account;
@@ -60,6 +61,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
             loginButton = (LoginButton) findViewById(R.id.loginBtnFb);
             checkbox = (CheckBox) findViewById(R.id.cbLogin);
             loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
 
                 @Override
                 public void onSuccess(LoginResult loginResult) {

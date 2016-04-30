@@ -26,7 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="5dp"
             android:background="@color/colorPrimaryDark"
-            android:text="Guide"
+            android:text="Share on facebook"
             android:textColor="@color/white"
             android:textSize="20dp"></Button>
 
@@ -48,5 +48,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnAboutUs"
             android:src="@drawable/about_us" />
+
     </RelativeLayout>
 </ScrollView>

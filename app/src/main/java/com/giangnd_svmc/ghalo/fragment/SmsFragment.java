@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.ReadSMS;
@@ -49,6 +50,7 @@ public class SmsFragment extends Fragment {
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getContext(),"Toasdsdfasdf",Toast.LENGTH_SHORT).show();
 //                Intent intent = new Intent(MainActivity.this, SearchPhoneSendSMS.class);
 //                startActivity(intent);
             }

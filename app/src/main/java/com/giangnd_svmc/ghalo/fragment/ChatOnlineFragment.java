@@ -1,10 +1,14 @@
 package com.giangnd_svmc.ghalo.fragment;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -14,12 +18,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.giangnd_svmc.ghalo.ChatActivity;
+import com.giangnd_svmc.ghalo.DetailFacebook;
+import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
 import com.giangnd_svmc.ghalo.R;
+import com.giangnd_svmc.ghalo.entity.SMS;
 import com.giangnd_svmc.ghalo.event.RecyclerItemClickListener;
 import com.giangnd_svmc.ghalo.global.SocketHandler;
 import com.giangnd_svmc.ghalo.adapter.AccountAdapter;
@@ -44,6 +56,7 @@ import java.util.List;
 public class ChatOnlineFragment extends Fragment {
     private Account session_user;
     private MessageDao messageDao = new MessageDao(getActivity());
+    private int vt = 0;
 
     public ChatOnlineFragment() {
         // Required empty public constructor
@@ -56,6 +69,8 @@ public class ChatOnlineFragment extends Fragment {
     private Switch swIsOnline;
     private Socket mSocket;
     private Account friend;
+    private AutoCompleteTextView autoCompleteTextView;
+    private Button btnSearch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +80,7 @@ public class ChatOnlineFragment extends Fragment {
 //            mSocket = IO.socket("http://192.168.43.22:3000");
         try {
 //            mSocket = IO.socket("http://192.168.11.1:3000");
-            mSocket = IO.socket(getResources().getString(R.string.hosting));
+            mSocket = IO.socket(getResources().getString(R.string.dev));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -74,7 +89,7 @@ public class ChatOnlineFragment extends Fragment {
         //server tra ve ket qua
         try {
             mSocket.on("server-tra-ve-so-nguoi-online", clientReqNumberUserOnline);
-            mSocket.on("server-tra-ve-tn-" + session_user.getName() + "-" + session_user.getGender(), baoNoti);
+            mSocket.on("server-tra-ve-tn-" + session_user.toServer(), baoNoti);
         } catch (Exception ex) {
             Log.d("MYEXCEPTION", ex.getMessage());
         }
@@ -94,6 +109,9 @@ public class ChatOnlineFragment extends Fragment {
         recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
         swIsOnline = (Switch) getActivity().findViewById(R.id.swtIsOnline);
         mAdapter = new AccountAdapter(friends);
+        autoCompleteTextView = (AutoCompleteTextView) getActivity().findViewById(R.id.actvKeyword);
+        btnSearch = (Button) getActivity().findViewById(R.id.btnSearch);
+        
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mLayoutManager.setReverseLayout(true);
@@ -105,9 +123,9 @@ public class ChatOnlineFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    mSocket.emit("client-join-room", session_user.getName() + "-" + session_user.getGender());
+                    mSocket.emit("client-join-room", session_user.toServer());
                 } else {
-                    mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+                    mSocket.emit("client-out-room", session_user.toServer());
                 }
             }
         });
@@ -120,14 +138,12 @@ public class ChatOnlineFragment extends Fragment {
                 } else if (friends.get(position).getName().equals(session_user.getName())) {
                     Toast.makeText(getActivity(), "Can not talk to yourself!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Intent intent = new Intent(getActivity(), ChatActivity.class);
-                    intent.putExtra("ME", session_user);
-                    intent.putExtra("FRIEND", friends.get(position));
-                    friends.get(position).setCheckNewSms(false);
-                    startActivity(intent);
+                    vt = position;
+                    createDialog();
                 }
             }
         }));
+
     }
 
     @Override
@@ -148,7 +164,7 @@ public class ChatOnlineFragment extends Fragment {
                         for (int i = 0; i < listUser.length(); i++) {
                             String user = listUser.get(i).toString();
                             String arr[] = user.split("-");
-                            friends.add(new Account("", arr[0], arr[1], ""));
+                            friends.add(new Account(arr[0], arr[1], arr[2], ""));
                         }
                         mAdapter = new AccountAdapter(friends);
                         mAdapter.notifyDataSetChanged();
@@ -177,7 +193,7 @@ public class ChatOnlineFragment extends Fragment {
                             if (!friends.get(i).getCheckNewSms()) {
                                 vt = i;
                             }
-                            if (friends.get(i).getName().equals(person[0])) {
+                            if (friends.get(i).getName().equals(person[1])) {
                                 friends.get(i).setCheckNewSms(true);
                                 j = i;
                                 break;
@@ -185,9 +201,9 @@ public class ChatOnlineFragment extends Fragment {
                         }
                         mAdapter = new AccountAdapter(friends);
                         recyclerView.setAdapter(mAdapter);
-                        Toast.makeText(getActivity(), "You have got new message!\n" + person[0] + ":" + arrs[1], Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "You have got new message!\n" + person[1] + ":" + arrs[1], Toast.LENGTH_LONG).show();
 //                        createNoti("You have got new message!", person[0] + ":" + arrs[1]);
-                        Message message = new Message(person[0], session_user.getName(), arrs[1]);
+                        Message message = new Message(person[1], session_user.getName(), arrs[1]);
                         messageDao = new MessageDao(getActivity());
                         messageDao.open();
                         messageDao.createData(message);
@@ -230,19 +246,49 @@ public class ChatOnlineFragment extends Fragment {
         super.onResume();
         mAdapter = new AccountAdapter(friends);
         recyclerView.setAdapter(mAdapter);
-        mSocket.emit("client-join-room", session_user.getName() + "-" + session_user.getGender());
+        mSocket.emit("client-join-room", session_user.toServer());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(getActivity(), "Onpause", Toast.LENGTH_SHORT).show();
-        mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+        mSocket.emit("client-out-room", session_user.toServer());
     }
+
     @Override
     public void onPause() {
         super.onPause();
         //out room
-        mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+        mSocket.emit("client-out-room", session_user.toServer());
+    }
+
+    public void createDialog() {
+        new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setIcon(R.drawable.icon_logout)
+                .setTitle("Choose once action")
+                .setCancelable(true)
+                .setMessage("Chat with friend/ show detail?")
+                .setPositiveButton("Chatting", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        intent.putExtra("ME", session_user);
+                        intent.putExtra("FRIEND", friends.get(vt));
+                        friends.get(vt).setCheckNewSms(false);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Show detail", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Intent intent = new Intent(getActivity(), DetailFacebook.class);
+                        intent.putExtra("FRIEND", friends.get(vt));
+                        startActivity(intent);
+                    }
+                })
+                .show();
+
     }
 }

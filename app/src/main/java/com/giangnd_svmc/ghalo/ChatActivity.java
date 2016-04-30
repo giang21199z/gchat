@@ -6,7 +6,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -33,7 +35,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<Message> messages = new ArrayList<>();
     private RecyclerView recyclerView;
     private MessageAdapter mAdapter;
-    private ImageButton ibtnSend;
+    private Button ibtnSend;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private EditText edtChat;
     private Account friend;
@@ -50,8 +52,13 @@ public class ChatActivity extends AppCompatActivity {
         me = new SessionHandler(this.getBaseContext()).getSharePrefer();
         friend = (Account) intent.getSerializableExtra(getString(R.string.FRIEND));
 
+        mSocket.emit("client-join-room", me.toServer());
+
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ab.setTitle("Chat with " + friend.getName());
+
         recyclerView = (RecyclerView) findViewById(R.id.rvfriend_chat_list);
-        ibtnSend = (ImageButton) findViewById(R.id.btnChatFriend);
+        ibtnSend = (Button) findViewById(R.id.btnChatFriend);
         edtChat = (EditText) findViewById(R.id.edtChat);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
 
@@ -78,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                     mAdapter.setSession_user(me);
                     edtChat.setText("");
-                    mSocket.emit(getString(R.string.client_chat_friend), me.getName() + "-" + me.getGender() + "_" + friend.getName() + "-" + friend.getGender() + ":" + content);
+                    mSocket.emit(getString(R.string.client_chat_friend), me.toServer() + "_" + friend.toServer() + ":" + content);
                     messageDao.open();
                     messageDao.createData(message);
                     messageDao.close();
@@ -92,7 +99,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        mSocket.on(getString(R.string.server_tra_ve_tn_) + me.getName() + "-" + me.getGender(), nhanTinNhan);
+        mSocket.on(getString(R.string.server_tra_ve_tn_) + me.toServer(), nhanTinNhan);
         //event show them message
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -120,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
                         String content = data.getString(getString(R.string.tinnhan));
                         String arr[] = content.split(":");
                         String[] nguoi_gui = arr[0].split("-");
-                        Message message = new Message(nguoi_gui[0], me.getName(), arr[1]);
+                        Message message = new Message(nguoi_gui[1], me.getName(), arr[1]);
                         messages.add(message);
                         if (messages.size() > 10) {
                             messages.remove(0);

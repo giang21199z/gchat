@@ -2,11 +2,13 @@ package com.giangnd_svmc.ghalo.adapter;
 
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.entity.Account;

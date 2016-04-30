@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -12,9 +13,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.widget.ShareButton;
+import com.facebook.share.widget.ShareDialog;
 import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.entity.SMS;
@@ -37,9 +49,33 @@ public class PersonalFragment extends Fragment {
         // Required empty public constructor
     }
 
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getActivity());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        // this part is optional
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(getActivity(), "Share success", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(getActivity(), "Share cancel", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(getActivity(), "Share error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -82,7 +118,7 @@ public class PersonalFragment extends Fragment {
                                 //end delete
                                 //Logout room chat
                                 mSocket = SocketHandler.getSocket();
-                                mSocket.emit("client-out-room", session_user.getName() + "-" + session_user.getGender());
+                                mSocket.emit("client-out-room", session_user.toServer());
                                 //End logout room chat
                                 Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
                                 ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
@@ -102,6 +138,16 @@ public class PersonalFragment extends Fragment {
             public void onClick(View v) {
                 imvFragmentThree.setImageDrawable(getResources().getDrawable(R.drawable.guideline));
                 imvFragmentThree.requestFocus();
+                if (ShareDialog.canShow(ShareLinkContent.class)) {
+                    ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                            .setContentTitle("Gchat ra mắt")
+                            .setContentDescription("Gchat! Kết nối yêu thương")
+                            .setImageUrl(Uri.parse("http://giangnd.xyz/img/logo.png"))
+                            .setContentUrl(Uri.parse("http://giangnd.xyz"))
+                            .build();
+
+                    shareDialog.show(linkContent);
+                }
             }
         });
         btnAboutUs.setOnClickListener(new View.OnClickListener() {
@@ -111,5 +157,11 @@ public class PersonalFragment extends Fragment {
                 imvFragmentThree.requestFocus();
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

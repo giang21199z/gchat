@@ -19,4 +19,6 @@
     <string name="table_message">tblmessage</string>
     <string name="title_activity_base">BaseActivity</string>
     <string name="hosting">http://192.168.43.22:3000</string>
+    <string name="cloud">http://103.237.98.211:3000</string>
+    <string name="dev">http://192.168.11.1:3000</string>
 </resources>
