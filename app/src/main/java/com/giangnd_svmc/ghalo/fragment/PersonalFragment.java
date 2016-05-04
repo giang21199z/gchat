@@ -28,6 +28,7 @@ import com.facebook.share.model.ShareOpenGraphObject;
 import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
 import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
+import com.giangnd_svmc.ghalo.MainActivity;
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.entity.SMS;
 import com.giangnd_svmc.ghalo.global.SocketHandler;
@@ -108,25 +109,43 @@ public class PersonalFragment extends Fragment {
                                 LoginManager.getInstance().logOut();
                                 //end logout fb
                                 //delete sharepreferences
-                                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("ghalo", 0);
-                                SharedPreferences.Editor edt = sharedPreferences.edit();
-                                edt.remove("id");
-                                edt.remove("name");
-                                edt.remove("gender");
-                                edt.remove("email");
-                                edt.commit();
-                                //end delete
-                                //Logout room chat
-                                mSocket = SocketHandler.getSocket();
-                                mSocket.emit("client-out-room", session_user.toServer());
-                                //End logout room chat
-                                Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
-                                ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("LIST_SMS", listThreadIdSMS);
-                                startActivity(intent);
-                                mSocket.disconnect();
-                                getActivity().finish();
+                                SharedPreferences sp = getActivity().getSharedPreferences("ghalo", getActivity().MODE_PRIVATE);
+                                String id = sp.getString("id", "none");
+                                if (id.equals("69696969")) {
+                                    SharedPreferences.Editor edt = sp.edit();
+                                    edt.remove("id");
+                                    edt.remove("name");
+                                    edt.remove("gender");
+                                    edt.remove("email");
+                                    edt.commit();
+                                    //end delete
+                                    //End logout room chat
+                                    Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
+                                    ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.putExtra("LIST_SMS", listThreadIdSMS);
+                                    startActivity(intent);
+                                } else {
+                                    SharedPreferences.Editor edt = sp.edit();
+                                    edt.remove("id");
+                                    edt.remove("name");
+                                    edt.remove("gender");
+                                    edt.remove("email");
+                                    edt.commit();
+                                    //end delete
+                                    //Logout room chat
+                                    mSocket = SocketHandler.getSocket();
+                                    mSocket.emit("client-out-room", session_user.toServer());
+                                    //End logout room chat
+                                    MainActivity activity = (MainActivity)getActivity();
+
+                                    Intent intent = new Intent(activity, LoginOrRegisterActivity.class);
+                                    ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.putExtra("LIST_SMS", listThreadIdSMS);
+                                    startActivity(intent);
+                                    mSocket.disconnect();
+                                }
                             }
                         })
                         .setNegativeButton("No", null)

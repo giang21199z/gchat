@@ -12,13 +12,17 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
-    <CheckBox
+
+    <Button
         android:layout_width="wrap_content"
-        android:text="Duy trì đăng nhập"
-        android:id="@+id/cbLogin"
         android:layout_height="wrap_content"
+        android:text="Login as guest"
+        android:id="@+id/btnLoginGuest"
+        android:background="#1b51af"
+        android:textColor="#ffffff"
+        android:paddingEnd="10dp"
+        android:paddingStart="10dp"
         android:layout_below="@+id/loginBtnFb"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:checked="true" />
+        android:layout_marginTop="60dp" />
 </RelativeLayout>

@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -33,9 +35,9 @@ import java.util.ArrayList;
 public class LoginOrRegisterActivity extends AppCompatActivity {
 
     private LoginButton loginButton;
+    private Button btnLoginAsGuest;
     private CallbackManager callbackManager;
     private Account session_user = new Account();
-    private CheckBox checkbox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +47,10 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         String name = sp.getString("name", "none");
         String gender = sp.getString("gender", "none");
         String email = sp.getString("email", "none");
-        if (!name.equals("none") && !gender.equals("none")) {
+        if (!name.equals("none") && !gender.equals("none") && !id.equals("69696969")) {
             session_user = new Account(id, name, gender, email);
             ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this,MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("SESSION", session_user);
             intent.putExtra("LIST_SMS", listSMS);
@@ -59,7 +61,35 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
             callbackManager = CallbackManager.Factory.create();
             setContentView(R.layout.activity_login_or_register);
             loginButton = (LoginButton) findViewById(R.id.loginBtnFb);
-            checkbox = (CheckBox) findViewById(R.id.cbLogin);
+            btnLoginAsGuest = (Button) findViewById(R.id.btnLoginGuest);
+            btnLoginAsGuest.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String id = "69696969";
+                    String name = "GUEST";
+                    String gender = "GUEST";
+                    String email = "GUEST";
+                    session_user.setId(id);
+                    session_user.setEmail(email);
+                    session_user.setGender(gender);
+                    session_user.setName(name);
+                    SharedPreferences sp = getSharedPreferences("ghalo", MODE_PRIVATE);
+                    SharedPreferences.Editor edt = sp.edit();
+                    edt.putString("id", id);
+                    edt.putString("name", name);
+                    edt.putString("gender", gender);
+                    edt.putString("email", email);
+                    edt.commit();
+                    session_user = new Account(id, name, gender, email);
+                    ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
+                    Intent intent = new Intent(LoginOrRegisterActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("SESSION", session_user);
+                    intent.putExtra("LIST_SMS", listSMS);
+                    startActivity(intent);
+                    finish();
+                }
+            });
             loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
 
@@ -77,15 +107,13 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                             session_user.setEmail(email);
                             session_user.setGender(gender);
                             session_user.setName(name);
-                            if (checkbox.isChecked()) {
-                                SharedPreferences sp = getSharedPreferences("ghalo", MODE_PRIVATE);
-                                SharedPreferences.Editor edt = sp.edit();
-                                edt.putString("id", id);
-                                edt.putString("name", name);
-                                edt.putString("gender", gender);
-                                edt.putString("email", email);
-                                edt.commit();
-                            }
+                            SharedPreferences sp = getSharedPreferences("ghalo", MODE_PRIVATE);
+                            SharedPreferences.Editor edt = sp.edit();
+                            edt.putString("id", id);
+                            edt.putString("name", name);
+                            edt.putString("gender", gender);
+                            edt.putString("email", email);
+                            edt.commit();
                             session_user = new Account(id, name, gender, email);
                             ArrayList<SMS> listSMS = (ArrayList<SMS>) getIntent().getSerializableExtra("LIST_SMS");
                             Intent intent = new Intent(LoginOrRegisterActivity.this, MainActivity.class);

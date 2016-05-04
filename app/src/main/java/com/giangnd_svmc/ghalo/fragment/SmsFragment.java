@@ -1,5 +1,6 @@
 package com.giangnd_svmc.ghalo.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.ReadSMS;
+import com.giangnd_svmc.ghalo.SearchPhoneSendSMS;
 import com.giangnd_svmc.ghalo.adapter.SMSListAdapter;
 import com.giangnd_svmc.ghalo.entity.SMS;
 
@@ -50,9 +52,9 @@ public class SmsFragment extends Fragment {
         FAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(),"Toasdsdfasdf",Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(MainActivity.this, SearchPhoneSendSMS.class);
-//                startActivity(intent);
+//                Toast.makeText(getContext(),"Toasdsdfasdf",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), SearchPhoneSendSMS.class);
+                startActivity(intent);
             }
         });
         putSMSToAdapter();

@@ -1,5 +1,6 @@
 package com.giangnd_svmc.ghalo.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -55,13 +57,21 @@ import java.util.List;
  */
 public class ChatOnlineFragment extends Fragment {
     private Account session_user;
-    private MessageDao messageDao = new MessageDao(getActivity());
+    private Activity activity;
+    private MessageDao messageDao = new MessageDao(activity);
     private int vt = 0;
+
+    private ArrayList<String> FRIEND_LIST = new ArrayList<String>();
 
     public ChatOnlineFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity=activity;
+    }
 
     private RecyclerView recyclerView;
     private AccountAdapter mAdapter;
@@ -75,12 +85,17 @@ public class ChatOnlineFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969")) {
+            return;
+        }
+        session_user = (Account) activity.getIntent().getSerializableExtra("SESSION");
         //connect to server
 //            mSocket = IO.socket("http://192.168.43.22:3000");
         try {
 //            mSocket = IO.socket("http://192.168.11.1:3000");
-            mSocket = IO.socket(getResources().getString(R.string.dev));
+            mSocket = IO.socket(getResources().getString(R.string.cloud));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -100,19 +115,32 @@ public class ChatOnlineFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969")) {
+            return inflater.inflate(R.layout.activity_layout_guest, container, false);
+        }
         return inflater.inflate(R.layout.fragment_one, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = (RecyclerView) getActivity().findViewById(R.id.recycler_view);
-        swIsOnline = (Switch) getActivity().findViewById(R.id.swtIsOnline);
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969")) {
+            return;
+        }
+        recyclerView = (RecyclerView) activity.findViewById(R.id.recycler_view);
+        swIsOnline = (Switch) activity.findViewById(R.id.swtIsOnline);
         mAdapter = new AccountAdapter(friends);
-        autoCompleteTextView = (AutoCompleteTextView) getActivity().findViewById(R.id.actvKeyword);
-        btnSearch = (Button) getActivity().findViewById(R.id.btnSearch);
-        
-        final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        autoCompleteTextView = (AutoCompleteTextView) activity.findViewById(R.id.actvKeyword);
+        btnSearch = (Button) activity.findViewById(R.id.btnSearch);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, FRIEND_LIST);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setThreshold(1);
+
+        final LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
@@ -129,21 +157,35 @@ public class ChatOnlineFragment extends Fragment {
                 }
             }
         });
-        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
 //                 TODO Handle item click
                 if (!swIsOnline.isChecked()) {
-                    Toast.makeText(getActivity(), "Your must online before choose a friend.\nPlease online now!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Your must online before choose a friend.\nPlease online now!", Toast.LENGTH_SHORT).show();
                 } else if (friends.get(position).getName().equals(session_user.getName())) {
-                    Toast.makeText(getActivity(), "Can not talk to yourself!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Can not talk to yourself!", Toast.LENGTH_SHORT).show();
                 } else {
                     vt = position;
                     createDialog();
                 }
             }
         }));
-
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String keyword = autoCompleteTextView.getText().toString();
+                ArrayList<Account> arrAccounts = new ArrayList<Account>();
+                for (Account account : friends) {
+                    if (account.getName().contains(keyword)) {
+                        arrAccounts.add(account);
+                    }
+                }
+                mAdapter = new AccountAdapter(arrAccounts);
+                mAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(mAdapter);
+            }
+        });
     }
 
     @Override
@@ -154,80 +196,84 @@ public class ChatOnlineFragment extends Fragment {
     private Emitter.Listener clientReqNumberUserOnline = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    try {
-                        JSONArray listUser = data.getJSONArray("danhsach");
-                        friends = new ArrayList<>();
-                        for (int i = 0; i < listUser.length(); i++) {
-                            String user = listUser.get(i).toString();
-                            String arr[] = user.split("-");
-                            friends.add(new Account(arr[0], arr[1], arr[2], ""));
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        try {
+                            FRIEND_LIST = new ArrayList<String>();
+                            JSONArray listUser = data.getJSONArray("danhsach");
+                            friends = new ArrayList<>();
+                            for (int i = 0; i < listUser.length(); i++) {
+                                String user = listUser.get(i).toString();
+                                String arr[] = user.split("-");
+                                friends.add(new Account(arr[0], arr[1], arr[2], ""));
+                                FRIEND_LIST.add(arr[1]);
+                            }
+                            updateListFriendOnline();
+
+                            mAdapter = new AccountAdapter(friends);
+                            mAdapter.notifyDataSetChanged();
+                            recyclerView.setAdapter(mAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        mAdapter = new AccountAdapter(friends);
-                        mAdapter.notifyDataSetChanged();
-                        recyclerView.setAdapter(mAdapter);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                }
-            });
+                });
         }
     };
     private Emitter.Listener baoNoti = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    try {
-                        String content = data.getString("tinnhan");
-                        String arrs[] = content.split(":");
-                        String person[] = arrs[0].split("-");
-                        int vt = 0;
-                        int j = 0;
-                        for (int i = 0; i < friends.size(); i++) {
-                            if (!friends.get(i).getCheckNewSms()) {
-                                vt = i;
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        try {
+                            String content = data.getString("tinnhan");
+                            String arrs[] = content.split(":");
+                            String person[] = arrs[0].split("-");
+                            int vt = 0;
+                            int j = 0;
+                            for (int i = 0; i < friends.size(); i++) {
+                                if (!friends.get(i).getCheckNewSms()) {
+                                    vt = i;
+                                }
+                                if (friends.get(i).getName().equals(person[1])) {
+                                    friends.get(i).setCheckNewSms(true);
+                                    j = i;
+                                    break;
+                                }
                             }
-                            if (friends.get(i).getName().equals(person[1])) {
-                                friends.get(i).setCheckNewSms(true);
-                                j = i;
-                                break;
-                            }
-                        }
-                        mAdapter = new AccountAdapter(friends);
-                        recyclerView.setAdapter(mAdapter);
-                        Toast.makeText(getActivity(), "You have got new message!\n" + person[1] + ":" + arrs[1], Toast.LENGTH_LONG).show();
+                            mAdapter = new AccountAdapter(friends);
+                            recyclerView.setAdapter(mAdapter);
+                            Toast.makeText(activity, "You have got new message!\n" + person[1] + ":" + arrs[1], Toast.LENGTH_LONG).show();
 //                        createNoti("You have got new message!", person[0] + ":" + arrs[1]);
-                        Message message = new Message(person[1], session_user.getName(), arrs[1]);
-                        messageDao = new MessageDao(getActivity());
-                        messageDao.open();
-                        messageDao.createData(message);
-                        messageDao.close();
-                    } catch (JSONException e) {
-                        return;
+                            Message message = new Message(person[1], session_user.getName(), arrs[1]);
+                            messageDao = new MessageDao(activity);
+                            messageDao.open();
+                            messageDao.createData(message);
+                            messageDao.close();
+                        } catch (JSONException e) {
+                            return;
+                        }
                     }
-                }
-            });
+                });
         }
     };
 
 
 //    public void createNoti(String title, String content) {
 //        NotificationCompat.Builder mBuilder =
-//                (NotificationCompat.Builder) new NotificationCompat.Builder(getActivity())
+//                (NotificationCompat.Builder) new NotificationCompat.Builder(activity)
 //                        .setSmallIcon(R.drawable.message_icon)
 //                        .setContentTitle(title)
 //                        .setContentText(content);
-//        Intent resultIntent = new Intent(getActivity(), ChatActivity.class);
-//        session_user = (Account) getActivity().getIntent().getSerializableExtra("SESSION");
+//        Intent resultIntent = new Intent(activity, ChatActivity.class);
+//        session_user = (Account) activity.getIntent().getSerializableExtra("SESSION");
 //        resultIntent.putExtra("ME", session_user);
 //        resultIntent.putExtra("FRIEND", friend);
-//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getActivity());
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(activity);
 //        stackBuilder.addParentStack(ChatActivity.class);
 //        stackBuilder.addNextIntent(resultIntent);
 //        PendingIntent resultPendingIntent =
@@ -237,42 +283,69 @@ public class ChatOnlineFragment extends Fragment {
 //                );
 //        mBuilder.setContentIntent(resultPendingIntent);
 //        NotificationManager mNotificationManager =
-//                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+//                (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
 //        mNotificationManager.notify(1, mBuilder.build());
 //    }
 
     @Override
     public void onResume() {
         super.onResume();
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969") || id.equals("none")) {
+            return;
+        }
         mAdapter = new AccountAdapter(friends);
         recyclerView.setAdapter(mAdapter);
         mSocket.emit("client-join-room", session_user.toServer());
+        FRIEND_LIST.add(session_user.getName());
+        updateListFriendOnline();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(getActivity(), "Onpause", Toast.LENGTH_SHORT).show();
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969") || id.equals("none")) {
+            return;
+        }
+        Toast.makeText(activity, "Onpause", Toast.LENGTH_SHORT).show();
         mSocket.emit("client-out-room", session_user.toServer());
+        FRIEND_LIST.remove(session_user.getName());
+        updateListFriendOnline();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         //out room
+        SharedPreferences sp = activity.getSharedPreferences("ghalo", activity.MODE_PRIVATE);
+        String id = sp.getString("id", "none");
+        if (id.equals("69696969") || id.equals("none")) {
+            return;
+        }
         mSocket.emit("client-out-room", session_user.toServer());
+        FRIEND_LIST.remove(session_user.getName());
+        updateListFriendOnline();
+    }
+
+    void updateListFriendOnline() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, FRIEND_LIST);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setThreshold(1);
     }
 
     public void createDialog() {
-        new android.support.v7.app.AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.icon_logout)
+        new android.support.v7.app.AlertDialog.Builder(activity)
+                .setIcon(R.drawable.chooses)
                 .setTitle("Choose once action")
                 .setCancelable(true)
                 .setMessage("Chat with friend/ show detail?")
                 .setPositiveButton("Chatting", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        Intent intent = new Intent(activity, ChatActivity.class);
                         intent.putExtra("ME", session_user);
                         intent.putExtra("FRIEND", friends.get(vt));
                         friends.get(vt).setCheckNewSms(false);
@@ -283,7 +356,7 @@ public class ChatOnlineFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        Intent intent = new Intent(getActivity(), DetailFacebook.class);
+                        Intent intent = new Intent(activity, DetailFacebook.class);
                         intent.putExtra("FRIEND", friends.get(vt));
                         startActivity(intent);
                     }
