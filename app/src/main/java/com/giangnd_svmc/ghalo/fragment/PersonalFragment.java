@@ -3,7 +3,6 @@ package com.giangnd_svmc.ghalo.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,12 +21,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.model.ShareOpenGraphAction;
-import com.facebook.share.model.ShareOpenGraphContent;
-import com.facebook.share.model.ShareOpenGraphObject;
-import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
-import com.giangnd_svmc.ghalo.LoginOrRegisterActivity;
+import com.giangnd_svmc.ghalo.LoginActivity;
 import com.giangnd_svmc.ghalo.MainActivity;
 import com.giangnd_svmc.ghalo.R;
 import com.giangnd_svmc.ghalo.entity.SMS;
@@ -120,7 +115,7 @@ public class PersonalFragment extends Fragment {
                                     edt.commit();
                                     //end delete
                                     //End logout room chat
-                                    Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
+                                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                                     ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("LIST_SMS", listThreadIdSMS);
@@ -139,7 +134,7 @@ public class PersonalFragment extends Fragment {
                                     //End logout room chat
                                     MainActivity activity = (MainActivity)getActivity();
 
-                                    Intent intent = new Intent(activity, LoginOrRegisterActivity.class);
+                                    Intent intent = new Intent(activity, LoginActivity.class);
                                     ArrayList<SMS> listThreadIdSMS = (ArrayList<SMS>) getActivity().getIntent().getSerializableExtra("LIST_SMS");
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     intent.putExtra("LIST_SMS", listThreadIdSMS);

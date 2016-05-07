@@ -11,16 +11,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
-import android.util.Log;
 import android.view.Gravity;
 
-import com.giangnd_svmc.ghalo.adapter.SMSDetailAdapter;
 import com.giangnd_svmc.ghalo.entity.SMS;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -83,7 +79,7 @@ public class ReadSMS extends AsyncTask<Void, Void, Void> {
             progressDialog.dismiss();
         }
         if (type == 0) {
-            Intent intent = new Intent(activity, LoginOrRegisterActivity.class);
+            Intent intent = new Intent(activity, LoginActivity.class);
             intent.putExtra("LIST_SMS", listSMS);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
